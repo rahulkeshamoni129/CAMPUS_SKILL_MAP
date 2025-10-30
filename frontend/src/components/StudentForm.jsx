@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { addStudent, getRecommendations } from '../services/api';
 
-export default function StudentForm({ setRecommendation }) {
+// Accept an optional onResult callback so parent can get both student data and recommendation
+export default function StudentForm({ setRecommendation, onResult }) {
   const [student, setStudent] = useState({ name: '', degree: '', cgpa: '', skills: '', interests: '' });
 
   const handleChange = (e) => {
@@ -19,7 +20,11 @@ export default function StudentForm({ setRecommendation }) {
     console.log('Submitting studentData:', studentData);
     await addStudent(studentData);
     const res = await getRecommendations(studentData);
-    setRecommendation(res.data.recommendation);
+    const recommendationText = res.data.recommendation;
+    setRecommendation(recommendationText);
+    if (onResult) {
+      onResult({ studentData, recommendationText });
+    }
   };
 
   return (
